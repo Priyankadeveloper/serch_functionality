@@ -1,0 +1,52 @@
+	<input class="form-control"  id="myInput" placeholder="Search..." type="text">
+	Country: <select name="all_c" id="all_c">
+	<?php
+	$fetch_c_l = $wpdb->get_results("select * from 
+	wp_press_released");
+	foreach($fetch_c_l as $c_l)
+	{
+	?>
+	<option><?php echo $c_l->pr_country;?></option>
+	<?php } ?>
+	</select>
+	<input type="submit" name="submit" value="Search" onclick="search_group_call();">
+
+
+
+	$first_lang = $_REQUEST['first_lang'];
+	$cnty = $_REQUEST['all_c'];
+
+	$sql = "SELECT * from wp_press_released  where pr_status = 1";
+	
+	if($first_lang)
+	{
+	$sql .= " and (pr_tittle  like '%".$first_lang."%' or pr_keyword_f  like '%".$first_lang."%' or pr_keyword_s  like '%".$first_lang."%' or pr_keyword_t  like '%".$first_lang."%' or pr_city  like '%".$first_lang."%' or pr_state  like '%".$first_lang."%' or pr_country  like '%".$first_lang."%')";
+	}
+	if($cnty) {
+	$sql .= " and pr_country  = '".$cnty."'";
+	}
+	
+	--------------------
+	ajax(function)
+	<script>
+ function search_group_call()
+{
+	var first_lang = $('#myInput').val();
+	var all_c = $('#all_c').val();
+
+	$.ajax({
+		type:'POST',
+		url:'../process.php?action=search_group_call',
+		data:{first_lang:first_lang,all_c:all_c},
+		dataType:'JSON',
+		success:function(resp)
+		{
+			if(resp.status==1)
+			{
+				$('#myList').html(resp.data)
+			}
+		}
+	});
+	return false;
+}
+</script>
